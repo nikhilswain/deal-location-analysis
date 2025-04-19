@@ -17,7 +17,7 @@ type LandSale = {
 const landSales: LandSale[] = [
   {
     id: "1",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image-2.png",
     address: "Baylis 495 Business Park",
     submarket: "Melville, NY",
     date: "May-24",
@@ -30,7 +30,7 @@ const landSales: LandSale[] = [
   },
   {
     id: "2",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image-3.png",
     address: "1 Debaun Road",
     submarket: "Millstone, NJ",
     date: "Jun-24",
@@ -43,7 +43,7 @@ const landSales: LandSale[] = [
   },
   {
     id: "3",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image-4.png",
     address: "39 Edgeboro Road",
     submarket: "Millstone, NJ",
     date: "Oct-23",
@@ -56,7 +56,7 @@ const landSales: LandSale[] = [
   },
   {
     id: "4",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image-5.png",
     address: "Terminal Logistics Center",
     submarket: "Queens, NY",
     date: "Mar-23",

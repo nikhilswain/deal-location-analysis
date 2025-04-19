@@ -15,7 +15,7 @@ type Development = {
 const developments: Development[] = [
   {
     id: "1",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image.png",
     address: "640 Columbia Street",
     submarket: "Brooklyn",
     propertyType: "Warehouse-Distribution",
@@ -26,7 +26,7 @@ const developments: Development[] = [
   },
   {
     id: "2",
-    image: "/placeholder.svg?height=80&width=120",
+    image: "/images/image-1.png",
     address: "WB Mason Distribution",
     submarket: "Bronx",
     propertyType: "Last-Mile Delivery",

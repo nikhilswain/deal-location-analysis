@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -21,7 +20,6 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SupplyPipeline } from "../components/supply-pipeline";
 import { LandSaleComparables } from "../components/land-sale-comparables";
-import { DemographicTrends } from "../components/demographic-trends";
 import { ProximityInsights } from "../components/proximity-insights";
 import { ZoningOverlays } from "../components/zoning-overlays";
 import { FinancialMetrics } from "../components/financial-metrics";
@@ -86,8 +84,8 @@ export default function LocationAnalysis() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link
-                href="/deal-overview"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                href="#"
+                className="text-sm font-medium text-black transition-colors hover:text-primary"
               >
                 Deal Overview
               </Link>
@@ -168,7 +166,7 @@ export default function LocationAnalysis() {
                     <h3 className="text-sm font-medium mb-2">Search</h3>
                     <input
                       type="text"
-                      placeholder="Search..."
+                      placeholder="Ask me anything"
                       className="w-full h-10 rounded-full border border-input bg-background px-4 py-2 text-sm shadow-sm transition-colors"
                     />
                   </div>
@@ -180,12 +178,14 @@ export default function LocationAnalysis() {
               <div className="relative hidden md:block">
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Ask me anything"
                   className="h-9 w-[250px] rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors"
                 />
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                <span className="text-xs font-medium">SB</span>
+                <span className="text-xs font-medium" title="zero - my initial">
+                  Z0
+                </span>
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function LocationAnalysis() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-5">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
-                Location Analysis
+                Deal Overview
               </h1>
             </div>
             <div className="flex items-center gap-3">
