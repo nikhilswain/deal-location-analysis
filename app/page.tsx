@@ -28,6 +28,7 @@ import { MarketAnalysis } from "../components/market-analysis";
 import { LeaseAnalysis } from "../components/lease-analysis";
 import { AssetLevelData } from "../components/asset-level-data";
 import DemographicPage from "@/components/demographic-trends-v2";
+import jsPDF from "jspdf";
 
 export default function LocationAnalysis() {
   const [selectedModel, setSelectedModel] = useState(
@@ -62,6 +63,27 @@ export default function LocationAnalysis() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF();
+
+    // Add header
+    doc.setFontSize(16);
+    doc.text("280 Richards, Brooklyn, NY - Location Analysis", 20, 20);
+
+    // Add property details
+    doc.setFontSize(12);
+    doc.text("Property Details:", 20, 40);
+    doc.setFontSize(10);
+    doc.text(`Seller: Thor Equities`, 30, 50);
+    doc.text(`Guidance Price: $143,000,000`, 30, 60);
+    doc.text(`Guidance Price PSF: $23.92`, 30, 70);
+    doc.text(`Cap Rate: 5.0%`, 30, 80);
+    doc.text(`Property Size: 312,000 sqft`, 30, 90);
+    doc.text(`Land Area: 16 acres`, 30, 100);
+
+    doc.save("280-richards-location-analysis.pdf");
   };
 
   return (
@@ -323,8 +345,13 @@ export default function LocationAnalysis() {
                     <Download className="mr-2 h-4 w-4" />
                     Export to Excel
                   </Button>
-                  <Button variant="outline" size="sm">
-                    Generate PDF
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGeneratePDF}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Export to Pdf
                   </Button>
                 </div>
               </div>
