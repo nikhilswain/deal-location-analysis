@@ -74,10 +74,8 @@ const renderJson = (obj: any, level = 0): JSX.Element => {
 
 export function JsonViewer({ data }: JsonViewerProps) {
   return (
-    <div className="font-mono text-sm bg-white dark:bg-gray-900 rounded-lg p-4">
-      {/* <ScrollArea className="h-[400px]"> */}
-      <div className="whitespace-pre">{renderJson(data)}</div>
-      {/* </ScrollArea> */}
+    <div className="font-mono text-sm  bg-blue-50 rounded-lg p-4">
+      <div className="whitespace-pre  ">{renderJson(data)}</div>
     </div>
   );
 }

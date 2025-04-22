@@ -166,19 +166,19 @@ export default function LocationAnalysis() {
                 Deal Overview
               </Link>
               <Link
-                href="/workshop"
+                href="#"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Workshop
               </Link>
               <Link
-                href="/pipeline"
+                href="#"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Pipeline
               </Link>
               <Link
-                href="/settings"
+                href="#"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Settings
@@ -323,19 +323,22 @@ export default function LocationAnalysis() {
             {extractedData && <UploadDate />}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="pt-8">
-                <ToggleableContent title="PDF Extracted Text">
-                  <div className="whitespace-pre-wrap font-mono text-sm">
-                    {extractedTextData}
-                  </div>
-                </ToggleableContent>
-              </div>
+              <ToggleableContent title="PDF Extracted Text">
+                <div className="whitespace-pre-wrap font-mono text-sm">
+                  {extractedTextData}
+                </div>
+              </ToggleableContent>
 
-              <div className="pt-8">
-                <ToggleableContent title="JSON Data">
-                  <JsonViewer data={extractedData} />
-                </ToggleableContent>
-              </div>
+              <ToggleableContent title="JSON Data">
+                <JsonViewer
+                  data={
+                    extractedData ?? {
+                      pdfUpload: false,
+                      description: "No pdf uploaded",
+                    }
+                  }
+                />
+              </ToggleableContent>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">

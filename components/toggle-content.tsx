@@ -21,9 +21,9 @@ export function ToggleableContent({ title, children }: ToggleableContentProps) {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       <CollapsibleTrigger asChild>
-        <div className="flex items-center justify-between cursor-pointer p-4 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">
-          <h2 className="text-xl font-semibold text-gray-600">{title}</h2>
-          <Button variant="ghost" size="sm">
+        <div className="flex items-center justify-between cursor-pointer px-4 py-2 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">
+          <h2 className="text-xl font-semibold text-gray-600 ">{title}</h2>
+          <Button variant="ghost" size="sm" className="hover:bg-blue-50">
             {isOpen ? (
               <ChevronUp className="h-4 w-4" />
             ) : (
@@ -33,10 +33,10 @@ export function ToggleableContent({ title, children }: ToggleableContentProps) {
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="mt-2">
+      <CollapsibleContent className="mt-2 ">
         <div className="border rounded-md bg-card">
-          <ScrollArea className="h-[500px]">
-            <div className="p-4">{children}</div>
+          <ScrollArea className="h-[500px]  bg-blue-50">
+            <div className="p-4 ">{children}</div>
           </ScrollArea>
         </div>
       </CollapsibleContent>
