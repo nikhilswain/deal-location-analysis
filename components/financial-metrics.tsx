@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/format-currency";
 
 interface FinancialMetricsProps {
   data?: {
@@ -23,7 +24,7 @@ export function FinancialMetrics({ data }: FinancialMetricsProps) {
     },
     {
       label: "Current NOI",
-      value: data?.financialMetrics?.noi?.formatted || "$7,150,000",
+      value: formatCurrency(data?.financialMetrics?.noi?.value) || "$7,150,000",
     },
     {
       label: "Stabilized NOI",
