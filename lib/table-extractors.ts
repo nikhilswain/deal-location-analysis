@@ -6,41 +6,46 @@ export function extractComparablesFromRows(rows: string[][]): SaleComparable[] {
   const headerIdx = rows.findIndex((r) => r[0]?.trim() === "Date");
   if (headerIdx < 0) return comps;
 
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r[0]) break;
-    if (r.length < 10) continue;
+  const sizeRE = /^\d{1,3}(?:,\d{3})*$/;
 
-    const [
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const r = rows[i].map((c) => c.trim());
+    if (!r[0]) break;
+
+    if (r.length < 6) continue;
+
+    const date = r[0];
+    const propertyName = r[1] || "";
+    const tenant = r[2] || "";
+
+    const sizeIdx = r.findIndex((cell) => sizeRE.test(cell));
+    if (sizeIdx < 3) continue;
+
+    const market = r.slice(3, sizeIdx).join(" ");
+
+    const size = r[sizeIdx];
+    const totalPrice = r[sizeIdx + 1] || "";
+    const pricePerSqFt = r[sizeIdx + 2] || "";
+    const capRateStr = r[sizeIdx + 3] || "";
+    const purchaser = r[sizeIdx + 4] || "";
+    const seller = r.slice(sizeIdx + 5).join(" ") || "";
+
+    comps.push({
       date,
       propertyName,
       tenant,
       market,
       size,
-      totalPrice,
-      pricePerSqFt,
-      capRateStr,
+      totalPrice: totalPrice.startsWith("$") ? totalPrice : `$${totalPrice}`,
+      pricePerSqFt: pricePerSqFt.startsWith("$")
+        ? pricePerSqFt
+        : `$${pricePerSqFt}`,
+      capRate: parseFloat(capRateStr.replace("%", "")) || 0,
       purchaser,
       seller,
-    ] = r;
-
-    comps.push({
-      date: date.trim(),
-      propertyName: propertyName.trim(),
-      tenant: tenant.trim(),
-      market: market.trim(),
-      size: size.trim(),
-      totalPrice: totalPrice.trim().startsWith("$")
-        ? totalPrice.trim()
-        : `$${totalPrice.trim()}`,
-      pricePerSqFt: pricePerSqFt.trim().startsWith("$")
-        ? pricePerSqFt.trim()
-        : `$${pricePerSqFt.trim()}`,
-      capRate: parseFloat(capRateStr.replace("%", "").trim()),
-      purchaser: purchaser.trim(),
-      seller: seller.trim(),
     });
   }
+
   return comps;
 }
 

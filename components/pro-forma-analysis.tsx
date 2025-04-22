@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProFormaYear } from "@/types";
 import {
   Table,
@@ -17,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/format-currency";
 
 interface ProFormaAnalysisProps {
   data?: {
@@ -32,61 +27,13 @@ interface ProFormaAnalysisProps {
   };
 }
 
-// Fallback data
-const fallbackProForma = {
-  assumptions: {
-    rentGrowth: 3,
-    opexGrowth: 2.5,
-    taxGrowth: 2,
-    terminalCapRate: 5.5,
-  },
-  years: Array.from({ length: 10 }, (_, i) => ({
-    year: i + 1,
-    baseRent: 5000000 * Math.pow(1.03, i),
-    operatingExpenses: 1500000 * Math.pow(1.025, i),
-    taxes: 800000 * Math.pow(1.02, i),
-    netOperatingIncome: 0, // Calculated below
-    cashFlow: 0, // Calculated below
-    capEx: 200000,
-    occupancy: 95,
-  })).map((year) => ({
-    ...year,
-    netOperatingIncome: year.baseRent - year.operatingExpenses - year.taxes,
-    cashFlow: year.baseRent - year.operatingExpenses - year.taxes - year.capEx,
-  })),
-};
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
 export function ProFormaAnalysis({ data }: ProFormaAnalysisProps) {
-  const proForma = data?.proForma || fallbackProForma;
-  const years = proForma.years || [];
-  const assumptions = proForma.assumptions;
-
-  // Early return if no pro forma data
   if (!data?.proForma?.years?.length) {
     return null;
   }
 
-  const formatCurrency = (value: number | undefined) => {
-    if (value === undefined) return "-";
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   return (
-    <Card>
+    <Card className="bg-blue-50">
       <CardHeader>
         <CardTitle>10-Year Pro Forma Analysis</CardTitle>
       </CardHeader>
@@ -117,8 +64,12 @@ export function ProFormaAnalysis({ data }: ProFormaAnalysisProps) {
           <TableBody>
             {data.proForma.years.map((year, index) => (
               <TableRow key={index}>
-                <TableCell>Year {index + 1}</TableCell>
-                <TableCell className="text-right">{year.ending}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  Year {index + 1}
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap">
+                  {year.ending}
+                </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(year.scheduledBaseRent)}
                 </TableCell>

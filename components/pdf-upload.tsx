@@ -4,7 +4,8 @@ import { ChangeEvent, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ExtractedData } from "@/types";
-import { File, Loader2 } from "lucide-react";
+import { File } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface PdfUploadProps {
   onDataExtracted: (data: ExtractedData) => void;
@@ -13,14 +14,28 @@ interface PdfUploadProps {
 export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
   const { toast } = useToast();
-  const [extractedData, setExtractedData] = useState<ExtractedData | null>(
-    null
-  );
+
+  const simulateProgress = () => {
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 90) {
+          clearInterval(interval);
+          return p;
+        }
+        return p + 10;
+      });
+    }, 200);
+    return interval;
+  };
 
   const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    const progressInterval = simulateProgress();
+
     try {
-      setIsUploading(true);
       const formData = new FormData();
       formData.append("file", file);
 
@@ -29,17 +44,19 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (!response.ok) throw new Error("Upload failed");
 
       const result = await response.json();
       if (result.success && result.data) {
-        setExtractedData(result.data);
         onDataExtracted(result.data);
+      } else {
+        throw new Error(result.error || "Invalid response");
       }
-    } catch (error) {
-      console.error("Upload error:", error);
+    } catch (e) {
+      console.error("Upload error:", e);
       toast({
         title: "Error",
         description: "Failed to process PDF",
@@ -47,37 +64,31 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
       });
     } finally {
       setIsUploading(false);
+      // optionally reset progress after a moment
+      setTimeout(() => setProgress(0), 500);
     }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
+    if (file) handleFileUpload(file);
   };
 
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = useCallback((e) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(true);
   }, []);
 
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = useCallback((e) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback(async (e) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(false);
-
     const file = e.dataTransfer.files[0];
-    if (file) {
-      await handleFileUpload(file);
-    }
+    if (file) await handleFileUpload(file);
   }, []);
 
   return (
@@ -93,11 +104,11 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
         onDrop={handleDrop}
       >
         <input
+          id="pdf-upload"
           type="file"
           accept=".pdf"
           onChange={handleFileChange}
           className="hidden"
-          id="pdf-upload"
           disabled={isUploading}
         />
         <label
@@ -106,8 +117,14 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
         >
           {isUploading ? (
             <>
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Processing PDF...</p>
+              <Progress
+                value={progress}
+                className="w-full mb-2 bg-blue-50"
+                indicatorClassName="bg-blue-300"
+              />
+              <p className="text-sm text-muted-foreground">
+                Processing PDF… {progress}%
+              </p>
             </>
           ) : (
             <>
@@ -125,65 +142,6 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
           )}
         </label>
       </div>
-
-      {extractedData && (
-        <div className="mt-4 space-y-4 rounded-lg border bg-background p-4">
-          <div className="grid gap-2">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground">
-                  Property Type
-                </label>
-                <p className="text-sm font-medium">
-                  {extractedData.propertyOverview.propertyType || "N/A"}
-                </p>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">
-                  Location
-                </label>
-                <p className="text-sm font-medium">
-                  {extractedData.propertyOverview.location || "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-xs text-muted-foreground">
-              Financial Metrics
-            </label>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground">NOI</label>
-                <p className="text-sm font-medium">
-                  {extractedData.financialMetrics.noi?.formatted || "N/A"}
-                </p>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">
-                  Cap Rate
-                </label>
-                <p className="text-sm font-medium">
-                  {extractedData.financialMetrics.capRate
-                    ? `${extractedData.financialMetrics.capRate}%`
-                    : "N/A"}
-                </p>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">
-                  Occupancy
-                </label>
-                <p className="text-sm font-medium">
-                  {extractedData.financialMetrics.occupancy
-                    ? `${extractedData.financialMetrics.occupancy}%`
-                    : "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

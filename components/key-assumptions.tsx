@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/format-currency";
 
 interface KeyAssumptionsProps {
   data?: {
@@ -36,7 +37,7 @@ export function KeyAssumptions({ data }: KeyAssumptionsProps) {
   const assumptions = [
     {
       label: "Market Rent PSF",
-      value: `$${marketRentPSF}`,
+      value: `${formatCurrency(parseFloat(marketRentPSF))}`,
       note: "Annual NNN rent per square foot",
     },
     {

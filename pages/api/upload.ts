@@ -84,7 +84,6 @@ router
         }
       }
       extractedData.proForma = pf;
-      console.log("pf", pf);
 
       res.status(200).json({
         success: true,

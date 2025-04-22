@@ -34,6 +34,7 @@ import { UploadDate } from "@/components/upload-date";
 import { ProFormaAnalysis } from "@/components/pro-forma-analysis";
 import { LandSaleComparablesStatic } from "@/components/land-sale-comparables-static";
 import { LandSaleComparables } from "@/components/land-sale-comparables";
+import { formatCurrency } from "@/lib/format-currency";
 
 interface PropertyData {
   propertyName: string;
@@ -310,6 +311,11 @@ export default function LocationAnalysis() {
 
           <div className="space-y-10">
             {/* Hero Section (Map + Deal Info) */}
+            <div className="mt-4">
+              <PdfUpload onDataExtracted={handleDataExtracted} />
+            </div>
+            {extractedData && <UploadDate />}
+
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               {/* Left: Map/Property Image (60%) */}
               <div className="h-full md:col-span-3 relative rounded-lg overflow-hidden shadow-sm">
@@ -339,10 +345,6 @@ export default function LocationAnalysis() {
                   <h2 className="text-xl font-bold">
                     {propertyData.propertyName}
                   </h2>
-                  <div className="mt-4">
-                    <PdfUpload onDataExtracted={handleDataExtracted} />
-                  </div>
-                  <UploadDate />
                   <div className="text-sm text-muted-foreground">
                     {extractedData?.propertyOverview?.propertyType ||
                       "Industrial"}
@@ -412,6 +414,78 @@ export default function LocationAnalysis() {
                   </Button>
                 </div>
               </div>
+            </div>
+
+            {/* extracted additional data */}
+            <div className="grid grid-cols-1 ">
+              {extractedData && (
+                <div className="mt-4 space-y-4 rounded-lg border bg-background p-4 bg-blue-50">
+                  <div className="grid gap-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs text-muted-foreground">
+                          Property Type
+                        </label>
+                        <p className="text-sm font-medium">
+                          {extractedData.propertyOverview.propertyType || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground">
+                          Location
+                        </label>
+                        <p className="text-sm font-medium">
+                          {extractedData.propertyOverview.location || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label className="text-xs text-muted-foreground">
+                      Financial Metrics
+                    </label>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="text-xs text-muted-foreground">
+                          NOI
+                        </label>
+
+                        <p
+                          className="text-sm font-medium"
+                          title={String(
+                            extractedData.financialMetrics.noi?.value
+                          )}
+                        >
+                          {formatCurrency(
+                            extractedData.financialMetrics.noi?.value
+                          ) || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground">
+                          Cap Rate
+                        </label>
+                        <p className="text-sm font-medium">
+                          {extractedData.financialMetrics.capRate
+                            ? `${extractedData.financialMetrics.capRate}%`
+                            : "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground">
+                          Occupancy
+                        </label>
+                        <p className="text-sm font-medium">
+                          {extractedData.financialMetrics.occupancy
+                            ? `${extractedData.financialMetrics.occupancy}%`
+                            : "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Summary Section (Deal Summary + Asset-Level Data) */}
@@ -520,18 +594,15 @@ export default function LocationAnalysis() {
 
             {/* Financial Analysis Section */}
             <div className="space-y-8">
-              <div>
-                <h2 className="text-lg font-semibold mb-4">
-                  Sale Comparables & Financial Analysis
-                </h2>
-                <LandSaleComparables
-                  data={
-                    extractedData
-                      ? { salesComparables: extractedData.salesComparables }
-                      : undefined
-                  }
-                />
-              </div>
+              {/* {extractedData?.salesComparables && ( */}
+              <LandSaleComparables
+                data={
+                  extractedData
+                    ? { salesComparables: extractedData.salesComparables }
+                    : undefined
+                }
+              />
+              {/* )} */}
               <div>
                 <ProFormaAnalysis
                   data={
