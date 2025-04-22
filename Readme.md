@@ -2,18 +2,73 @@
 
 ## Overview
 
-This project implements a "Location Analysis" tab for Starboard AI’s Deal Screening Dashboard. The UI is designed to help investors quickly assess the market conditions, regional dynamics, development pipeline, and zoning context surrounding a potential real estate deal.
+This project implements a **"Location Analysis"** tab for Starboard AI’s Deal Screening Dashboard. The UI is designed to help investors quickly assess market conditions, regional dynamics, development pipelines, and zoning context for a potential real estate deal.
 
-The solution is modular, responsive, and follows a clean enterprise-grade design system consistent with the Figma reference.
+The solution is modular, responsive, and aligns with a clean enterprise-grade design system based on the provided Figma reference.
+
+---
 
 ## Tech Stack
 
-- **Framework:** Next.js (React)
+- **Framework:** Next.js (React + API routes for backend logic)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **UI Library:** shadcn/ui
 - **Charts:** Recharts
-- **Maps:** Google Maps (embedded via iframe for demonstration)
+- **Maps:** Google Maps (iframe-based demo)
+- **PDF Parsing:** `pdf-parse`, `pdf2table`, and custom regex methods for backend data extraction
+
+---
+
+## Getting Started
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/nikhilswain/deal-location-analysis.git
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+   If you run into issues, try:
+
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+   Visit `http://localhost:3000` or the port mentioned in the terminal.
+
+---
+
+## How It Works
+
+### Initial Load
+
+- On first load, the UI displays a static version of the Location Analysis page with placeholder content.
+
+### After PDF Upload
+
+- Once a PDF is uploaded via the "OM Upload" input, the backend uses Next.js API routes to parse and extract text and tables using `pdf-parse` and `pdf2table`.
+- Extracted data is processed using custom parsing logic and regular expressions to map into meaningful sections.
+- The initial static layout and design have been preserved to maintain familiarity.
+- Where relevant, some of the static content is dynamically updated with parsed data from the uploaded PDF, new sections are introduced for entirely new data.
+
+### Key Behavior
+
+- **Blue Highlighting:** Newly added or replaced data (from the uploaded PDF) is visually marked with a light blue background for clarity.
+- **Toggles:**
+  - **Text View:** View the raw extracted text from the PDF.
+  - **JSON View:** View the structured JSON output derived from the raw text.
+
+---
 
 ## Project Structure & Components
 
@@ -29,42 +84,39 @@ The solution is modular, responsive, and follows a clean enterprise-grade design
 - Embedded Google Map centered on the deal location
 - Right panel includes:
   - Deal name, location, type, pricing
-  - Two action buttons:
-    - **Export to Excel**
-    - **Generate PDF**
-
-> ✅ Both export features are fully implemented using mock data to demonstrate the logic and structure. While the data is placeholder, the technical flow for export is functional and ready to accept dynamic inputs.
+  - Two action buttons: - **Export to Excel** - **Generate PDF**
+    > ✅ Both export features are fully implemented using mock data. The export logic is real and extendable to API-fed data.
 
 ### 3. Summary Section
 
 - Two-column layout:
   - **Left:** Deal summary metrics (e.g., Cap Rate, IRR)
-  - **Right:** Scrollable or collapsible list of asset-level data (unit mix, sizes, etc.)
+  - **Right:** Scrollable or collapsible asset-level data
 
 ### 4. Extended Deal Data Panels
 
-- Four modular, collapsible panels:
+- Modular, collapsible sections:
   - Projected Financial Metrics
   - Key Assumptions
   - Market Analysis
   - Lease Analysis
-- Light visualizations using Recharts (e.g., bar and pie charts)
+- Visualized with Recharts
 
 ### 5. Location Intelligence
 
-#### Supply Pipeline (Left Panel – 30%)
+#### Supply Pipeline (30%)
 
-- Simple list view of nearby developments:
+- List of nearby developments:
   - Address
   - Property type
   - Timeline
   - Square footage
-  - Optional tenant data
+  - Optional tenant info
 
-#### Land Sale Comparables (Right Panel – 70%)
+#### Land Sale Comparables (70%)
 
-- 2x2 responsive card grid
-- Each card shows:
+- 2x2 responsive grid of cards
+- Each card includes:
   - Land address
   - Price per square foot
   - Parcel size
@@ -74,14 +126,14 @@ The solution is modular, responsive, and follows a clean enterprise-grade design
 
 #### Demographic Trends
 
-- Visual breakdown using charts:
+- Charts on:
   - Population growth
   - Income growth
   - Workforce composition
 
 #### Proximity Insights
 
-- List of distance-based metrics:
+- Distance-based metrics:
   - Highways
   - Rail lines
   - Ports
@@ -89,28 +141,26 @@ The solution is modular, responsive, and follows a clean enterprise-grade design
 
 #### Zoning Overlays
 
-- Zoning code list with brief descriptions
-- Clickable links to external municipal zoning references
+- Zoning codes with descriptions
+- Clickable external zoning references
+
+---
 
 ## Design Decisions
 
-- **Component-Driven:** Each section is its own component for reusability and scalability
-- **Clean Styling:** Built with Tailwind CSS and shadcn/ui to align with the Figma system
-- **Responsive UI:** Layouts adjust gracefully for tablets and mobile devices
-- **Mocked Data with Real Logic:** Export to Excel and PDF use sample data but show real export logic, easily extendable to backend or API-fed data
+- **Component-Driven:** Modular components for scalability
+- **Clean Styling:** Tailwind CSS + shadcn/ui to match design system
+- **Responsive UI:** Works across screens
+- **Mock Data, Real Logic:** Export flows are functional and ready for dynamic inputs
+
+---
 
 ## Features
 
-- Fully responsive design
-- Interactive Google Map
-- Clean section layout with collapsible data views
-- Recharts-powered visual summaries
-- Working export buttons (Excel/PDF) to demonstrate implementation
-- Ready-to-integrate structure for real datasets or APIs
-
-## Getting Started
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/nikhilswain/deal-location-analysis.git
-   ```
+- Fully responsive layout
+- Interactive Google Map view
+- Collapsible, section-based structure
+- Data-driven charts with Recharts
+- Upload-driven dynamic content
+- PDF + Excel export buttons
+- Text and JSON view toggles for uploaded data
