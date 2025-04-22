@@ -1,78 +1,79 @@
-export function LeaseAnalysis() {
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface LeaseAnalysisProps {
+  data?: {
+    tenantInfo?: {
+      mainTenant?: string;
+      leaseType?: string;
+      termLength?: string;
+      creditRating?: string;
+    };
+    financialMetrics?: {
+      occupancy?: number;
+    };
+  };
+}
+
+export function LeaseAnalysis({ data }: LeaseAnalysisProps) {
   return (
-    <div className="bg-white p-5 shadow-sm">
-      <h3 className="text-sm font-medium mb-4">Lease Analysis</h3>
-
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+    <Card>
+      <CardHeader>
+        <CardTitle>Lease Analysis</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs text-muted-foreground">
+                Primary Tenant
+              </div>
+              <div className="font-medium">
+                {data?.tenantInfo?.mainTenant || "Amazon"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Credit Rating</div>
+              <div className="font-medium">
+                {data?.tenantInfo?.creditRating || "AA"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Lease Type</div>
+              <div className="font-medium">
+                {data?.tenantInfo?.leaseType || "NNN"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Term Length</div>
+              <div className="font-medium">
+                {data?.tenantInfo?.termLength || "15 years"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Occupancy</div>
+              <div className="font-medium">
+                {data?.financialMetrics?.occupancy
+                  ? `${data.financialMetrics.occupancy}%`
+                  : "100%"}
+              </div>
+            </div>
           </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Rent PSF</div>
-            <div className="text-xl font-bold">$24.40</div>
+
+          <div className="pt-4">
+            <h3 className="text-sm font-medium mb-2">Lease Structure</h3>
+            <div className="text-sm text-muted-foreground">
+              {data?.tenantInfo?.leaseType === "NNN" ||
+              data?.tenantInfo?.leaseType?.includes("Triple Net")
+                ? "Triple Net (NNN) lease structure where tenant is responsible for all operating expenses, including property taxes, insurance, and maintenance."
+                : data?.tenantInfo?.leaseType?.includes("Absolute Net")
+                ? "Absolute Net lease structure where tenant bears all costs and risks associated with the property."
+                : "Standard lease structure with typical tenant responsibilities and obligations."}
+            </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-              <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">WALT</div>
-            <div className="text-xl font-bold">13 Yrs (Sep 37)</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M23 6l-9.5 9.5-5-5L1 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M17 6h6v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Rent Escalations</div>
-            <div className="text-xl font-bold">3%</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M23 6l-9.5 9.5-5-5L1 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M17 6h6v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Mark-to-Market Opportunity</div>
-            <div className="text-xl font-bold">30%+</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+      </CardContent>
+    </Card>
+  );
 }

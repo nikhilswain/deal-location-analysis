@@ -1,77 +1,97 @@
-export function KeyAssumptions() {
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface KeyAssumptionsProps {
+  data?: {
+    propertyDetails?: {
+      totalArea?: string;
+      yearBuilt?: string;
+      clearHeight?: string;
+    };
+    financialMetrics?: {
+      capRate?: number;
+      pricePerSF?: {
+        formatted?: string;
+        value?: number;
+      };
+      occupancy?: number;
+      noi?: {
+        formatted?: string;
+        value?: number;
+      };
+    };
+  };
+}
+
+export function KeyAssumptions({ data }: KeyAssumptionsProps) {
+  // Calculate assumptions based on available data
+  const rentableSF =
+    data?.propertyDetails?.totalArea?.match(/[\d,]+/)?.[0].replace(/,/g, "") ||
+    "312000";
+  const marketRentPSF = data?.financialMetrics?.noi?.value
+    ? ((data.financialMetrics.noi.value * 12) / parseInt(rentableSF)).toFixed(2)
+    : "28.00";
+
+  const assumptions = [
+    {
+      label: "Market Rent PSF",
+      value: `$${marketRentPSF}`,
+      note: "Annual NNN rent per square foot",
+    },
+    {
+      label: "Market Vacancy",
+      value: data?.financialMetrics?.occupancy
+        ? `${(100 - data.financialMetrics.occupancy).toFixed(1)}%`
+        : "5.0%",
+      note: "Long-term market vacancy rate",
+    },
+    {
+      label: "Exit Cap Rate",
+      value: data?.financialMetrics?.capRate
+        ? `${(data.financialMetrics.capRate + 0.5).toFixed(1)}%`
+        : "5.5%",
+      note: "Assumed exit capitalization rate",
+    },
+    {
+      label: "Annual Rent Growth",
+      value: "3.0%",
+      note: "Projected annual rent increase",
+    },
+    {
+      label: "Operating Expenses",
+      value: "$3.50 PSF",
+      note: "Triple net operating expenses",
+    },
+    {
+      label: "Property Tax Rate",
+      value: "1.85%",
+      note: "Of assessed value",
+    },
+  ];
+
   return (
-    <div className="bg-white p-5 shadow-sm border-r border-gray-100">
-      <h3 className="text-sm font-medium mb-4">Key Assumptions</h3>
-
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Exit Price</div>
-            <div className="text-xl font-bold">$195,000,000</div>
-          </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Key Assumptions</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {assumptions.map((assumption, index) => (
+            <div key={index}>
+              <div className="flex justify-between items-baseline mb-1">
+                <div className="text-xs text-muted-foreground">
+                  {assumption.label}
+                </div>
+                <div className="font-medium">{assumption.value}</div>
+              </div>
+              <div className="text-xs text-muted-foreground/75 italic">
+                {assumption.note}
+              </div>
+            </div>
+          ))}
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16 8v8M12 11v5M8 14v2M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Exit Cap Rate</div>
-            <div className="text-xl font-bold">5.0%</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M23 6l-9.5 9.5-5-5L1 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M17 6h6v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Rent Growth</div>
-            <div className="text-xl font-bold">3.5%</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-              <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Hold Period</div>
-            <div className="text-xl font-bold">16 Years</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+      </CardContent>
+    </Card>
+  );
 }

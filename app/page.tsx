@@ -1,5 +1,6 @@
 "use client";
 
+import { ExtractedData } from "@/types";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SupplyPipeline } from "../components/supply-pipeline";
-import { LandSaleComparables } from "../components/land-sale-comparables";
 import { ProximityInsights } from "../components/proximity-insights";
 import { ZoningOverlays } from "../components/zoning-overlays";
 import { FinancialMetrics } from "../components/financial-metrics";
@@ -29,12 +29,59 @@ import { LeaseAnalysis } from "../components/lease-analysis";
 import { AssetLevelData } from "../components/asset-level-data";
 import DemographicPage from "@/components/demographic-trends-v2";
 import jsPDF from "jspdf";
+import { PdfUpload } from "@/components/pdf-upload";
+import { UploadDate } from "@/components/upload-date";
+import { ProFormaAnalysis } from "@/components/pro-forma-analysis";
+import { LandSaleComparablesStatic } from "@/components/land-sale-comparables-static";
+import { LandSaleComparables } from "@/components/land-sale-comparables";
+
+interface PropertyData {
+  propertyName: string;
+  seller: string;
+  guidancePrice: string;
+  guidancePricePSF: string;
+  capRate: string;
+  propertySize: string;
+  landArea: string;
+}
 
 export default function LocationAnalysis() {
   const [selectedModel, setSelectedModel] = useState(
     "Industrial.Template.v2.4.xlsx"
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [extractedData, setExtractedData] = useState<ExtractedData | null>(
+    null
+  );
+  const [propertyData, setPropertyData] = useState<PropertyData>({
+    propertyName: "280 Richards, Brooklyn, NY",
+    seller: "Thor Equities",
+    guidancePrice: "$143,000,000",
+    guidancePricePSF: "$23.92",
+    capRate: "5.0%",
+    propertySize: "312,000 sqft",
+    landArea: "16 acres",
+  });
+
+  const handleDataExtracted = (data: ExtractedData) => {
+    setExtractedData(data);
+    setPropertyData((prevData) => ({
+      ...prevData,
+      propertyName:
+        data.propertyOverview?.propertyName || prevData.propertyName,
+      seller: data.tenantInfo?.mainTenant || prevData.seller,
+      guidancePrice:
+        data.financialMetrics?.askingPrice?.formatted || prevData.guidancePrice,
+      guidancePricePSF:
+        data.financialMetrics?.pricePerSF?.formatted ||
+        prevData.guidancePricePSF,
+      capRate: data.financialMetrics?.capRate
+        ? `${data.financialMetrics.capRate}%`
+        : prevData.capRate,
+      propertySize: data.propertyDetails?.totalArea || prevData.propertySize,
+      landArea: data.propertyDetails?.siteArea || prevData.landArea,
+    }));
+  };
 
   const handleExportToExcel = () => {
     // Create a sample Excel file with location analysis data
@@ -290,48 +337,58 @@ export default function LocationAnalysis() {
               <div className="md:col-span-2 flex flex-col bg-white rounded-lg p-6 shadow-sm">
                 <div className="mb-5">
                   <h2 className="text-xl font-bold">
-                    280 Richards, Brooklyn, NY
+                    {propertyData.propertyName}
                   </h2>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    Date Uploaded: 11/06/2024
+                  <div className="mt-4">
+                    <PdfUpload onDataExtracted={handleDataExtracted} />
                   </div>
-                  <div className="text-sm text-muted-foreground">Warehouse</div>
+                  <UploadDate />
+                  <div className="text-sm text-muted-foreground">
+                    {extractedData?.propertyOverview?.propertyType ||
+                      "Industrial"}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-5 mb-5">
                   <div>
                     <div className="text-xs text-muted-foreground">Seller</div>
-                    <div className="font-medium">Thor Equities</div>
+                    <div className="font-medium">{propertyData.seller}</div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">
                       Guidance Price
                     </div>
-                    <div className="font-medium">$143,000,000</div>
+                    <div className="font-medium">
+                      {propertyData.guidancePrice}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">
                       Guidance Price PSF
                     </div>
-                    <div className="font-medium">$23.92</div>
+                    <div className="font-medium">
+                      {propertyData.guidancePricePSF}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">
                       Cap Rate
                     </div>
-                    <div className="font-medium">5.0%</div>
+                    <div className="font-medium">{propertyData.capRate}</div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">
                       Property Size
                     </div>
-                    <div className="font-medium">312,000 sqft</div>
+                    <div className="font-medium">
+                      {propertyData.propertySize}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">
                       Land Area
                     </div>
-                    <div className="font-medium">16 acres</div>
+                    <div className="font-medium">{propertyData.landArea}</div>
                   </div>
                 </div>
 
@@ -363,59 +420,127 @@ export default function LocationAnalysis() {
               <div className="bg-white rounded-lg p-6 shadow-sm">
                 <h2 className="text-lg font-semibold mb-4">Location Summary</h2>
                 <p className="text-sm leading-relaxed">
-                  280 Richards is strategically located in Brooklyn's Red Hook
-                  district, a rapidly developing industrial and logistics hub.
-                  The property benefits from excellent connectivity to Manhattan
-                  (4.7 miles), major highways including I-278 (0.3 miles), and
-                  proximity to the Red Hook Container Terminal (1.2 miles). The
-                  surrounding area has seen significant investment in logistics
-                  infrastructure, with Amazon and other major tenants
-                  establishing operations nearby. The M-2 zoning designation
-                  allows for a wide range of industrial and manufacturing uses,
-                  making this location highly versatile for logistics
-                  operations.
+                  {extractedData?.propertyOverview?.description ||
+                    "280 Richards is strategically located in Brooklyn's Red Hook district, a rapidly developing industrial and logistics hub."}
                 </p>
 
                 <h3 className="text-md font-semibold mt-6 mb-3">
-                  Personalized Insights
+                  Market Highlights
                 </h3>
                 <ul className="text-sm list-disc pl-5 space-y-2">
-                  <li>
-                    Jake Klein viewed this deal in 2019, but decided not to
-                    proceed due to{" "}
-                    <Link href="#" className="text-blue-600 hover:underline">
-                      lack of potential upside
-                    </Link>
-                    .
-                  </li>
-                  <li>
-                    On 10/19/2021, your firm bid on{" "}
-                    <Link href="#" className="text-blue-600 hover:underline">
-                      55 Bay St, Brooklyn, NY 11231
-                    </Link>
-                    , a larger site also occupied by Amazon 0.5 miles away.
-                  </li>
-                  <li>
-                    On 01/19/2025, Tom, VP of Research, noted in the Investment
-                    Committee meeting that congestion pricing has driven{" "}
-                    <Link href="#" className="text-blue-600 hover:underline">
-                      renewed demand for infill industrial in Brooklyn
-                    </Link>
-                    .
-                  </li>
+                  {extractedData?.marketInfo?.marketHighlights?.map(
+                    (highlight, index) => <li key={index}>{highlight}</li>
+                  ) ||
+                    extractedData?.investmentHighlights
+                      ?.slice(0, 3)
+                      ?.map((highlight, index) => (
+                        <li key={index}>{highlight}</li>
+                      )) ||
+                    [
+                      "Prime location in Brooklyn's growing logistics hub",
+                      "Excellent connectivity to Manhattan and major highways",
+                      "Strong market fundamentals with increasing demand",
+                    ].map((text, index) => <li key={index}>{text}</li>)}
                 </ul>
+
+                {extractedData?.marketInfo?.demographics && (
+                  <>
+                    <h3 className="text-md font-semibold mt-6 mb-3">
+                      Demographics
+                    </h3>
+                    <ul className="text-sm list-disc pl-5 space-y-2">
+                      {extractedData.marketInfo.demographics.population && (
+                        <li>
+                          Population:{" "}
+                          {extractedData.marketInfo.demographics.population}
+                        </li>
+                      )}
+                      {extractedData.marketInfo.demographics
+                        .householdIncome && (
+                        <li>
+                          Household Income:{" "}
+                          {
+                            extractedData.marketInfo.demographics
+                              .householdIncome
+                          }
+                        </li>
+                      )}
+                      {extractedData.marketInfo.demographics.laborForce && (
+                        <li>
+                          Labor Force:{" "}
+                          {extractedData.marketInfo.demographics.laborForce}
+                        </li>
+                      )}
+                    </ul>
+                  </>
+                )}
               </div>
 
               {/* Right: Asset-Level Data */}
-              <AssetLevelData />
+              <AssetLevelData data={extractedData} />
             </div>
 
             {/* Extended Deal Data Section (4 Data Panels) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0">
-              <FinancialMetrics />
-              <KeyAssumptions />
-              <MarketAnalysis />
-              <LeaseAnalysis />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <FinancialMetrics
+                data={
+                  extractedData?.financialMetrics
+                    ? { financialMetrics: extractedData.financialMetrics }
+                    : undefined
+                }
+              />
+              <KeyAssumptions
+                data={
+                  extractedData
+                    ? {
+                        propertyDetails: extractedData.propertyDetails,
+                        financialMetrics: extractedData.financialMetrics,
+                      }
+                    : undefined
+                }
+              />
+              <MarketAnalysis
+                data={
+                  extractedData?.marketInfo
+                    ? { marketInfo: extractedData.marketInfo }
+                    : undefined
+                }
+              />
+              <LeaseAnalysis
+                data={
+                  extractedData
+                    ? {
+                        tenantInfo: extractedData.tenantInfo,
+                        financialMetrics: extractedData.financialMetrics,
+                      }
+                    : undefined
+                }
+              />
+            </div>
+
+            {/* Financial Analysis Section */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-lg font-semibold mb-4">
+                  Sale Comparables & Financial Analysis
+                </h2>
+                <LandSaleComparables
+                  data={
+                    extractedData
+                      ? { salesComparables: extractedData.salesComparables }
+                      : undefined
+                  }
+                />
+              </div>
+              <div>
+                <ProFormaAnalysis
+                  data={
+                    extractedData
+                      ? { proForma: extractedData.proForma }
+                      : undefined
+                  }
+                />
+              </div>
             </div>
 
             {/* Location Intelligence Section */}
@@ -424,10 +549,9 @@ export default function LocationAnalysis() {
               <div className="md:col-span-3">
                 <SupplyPipeline />
               </div>
-
               {/* Right: Land Sale Comparables (70%) */}
               <div className="md:col-span-7">
-                <LandSaleComparables />
+                <LandSaleComparablesStatic />
               </div>
             </div>
 

@@ -1,88 +1,151 @@
-export function MarketAnalysis() {
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface MarketAnalysisProps {
+  data?: {
+    marketInfo?: {
+      submarket?: string;
+      marketHighlights?: string[];
+      demographics?: {
+        population?: string;
+        householdIncome?: string;
+        laborForce?: string;
+      };
+      transport?: {
+        highways?: string[];
+        ports?: string[];
+        distances?: string[];
+      };
+    };
+  };
+}
+
+export function MarketAnalysis({ data }: MarketAnalysisProps) {
+  const highways = data?.marketInfo?.transport?.highways ?? [];
+  const ports = data?.marketInfo?.transport?.ports ?? [];
+  const distances = data?.marketInfo?.transport?.distances ?? [];
+
   return (
-    <div className="bg-white p-5 shadow-sm border-r border-gray-100">
-      <h3 className="text-sm font-medium mb-4">Market Analysis</h3>
+    <Card>
+      <CardHeader>
+        <CardTitle>Market Analysis</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[300px] pr-4">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium mb-2">Submarket</h3>
+              <p className="text-sm">
+                {data?.marketInfo?.submarket || "Red Hook, Brooklyn"}
+              </p>
+            </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M9 22V12h6v10"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Closest Urban Center</div>
-            <div className="text-xl font-bold">Brooklyn, NY</div>
-          </div>
-        </div>
+            {(data?.marketInfo?.demographics || highways.length > 0) && (
+              <div>
+                <h3 className="text-sm font-medium mb-2">
+                  Demographics & Access
+                </h3>
+                <div className="space-y-2">
+                  {data?.marketInfo?.demographics?.population && (
+                    <div>
+                      <div className="text-xs text-muted-foreground">
+                        Population
+                      </div>
+                      <div className="text-sm">
+                        {data.marketInfo.demographics.population}
+                      </div>
+                    </div>
+                  )}
+                  {data?.marketInfo?.demographics?.householdIncome && (
+                    <div>
+                      <div className="text-xs text-muted-foreground">
+                        Household Income
+                      </div>
+                      <div className="text-sm">
+                        {data.marketInfo.demographics.householdIncome}
+                      </div>
+                    </div>
+                  )}
+                  {data?.marketInfo?.demographics?.laborForce && (
+                    <div>
+                      <div className="text-xs text-muted-foreground">
+                        Labor Force
+                      </div>
+                      <div className="text-sm">
+                        {data.marketInfo.demographics.laborForce}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Population Growth Rate</div>
-            <div className="text-xl font-bold">1.2%</div>
-          </div>
-        </div>
+            {(highways.length > 0 ||
+              ports.length > 0 ||
+              distances.length > 0) && (
+              <div>
+                <h3 className="text-sm font-medium mb-2">
+                  Transportation Access
+                </h3>
+                {highways.length > 0 && (
+                  <div className="mb-2">
+                    <div className="text-xs text-muted-foreground">
+                      Highway Access
+                    </div>
+                    <ul className="text-sm list-disc pl-4">
+                      {highways.map((highway, index) => (
+                        <li key={index}>{highway}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {ports.length > 0 && (
+                  <div className="mb-2">
+                    <div className="text-xs text-muted-foreground">
+                      Port/Airport Access
+                    </div>
+                    <ul className="text-sm list-disc pl-4">
+                      {ports.map((port, index) => (
+                        <li key={index}>{port}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {distances.length > 0 && (
+                  <div>
+                    <div className="text-xs text-muted-foreground">
+                      Key Distances
+                    </div>
+                    <ul className="text-sm list-disc pl-4">
+                      {distances.map((distance, index) => (
+                        <li key={index}>{distance}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
 
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            {data?.marketInfo?.marketHighlights &&
+              data.marketInfo.marketHighlights.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-medium mb-2">
+                    Market Highlights
+                  </h3>
+                  <ul className="text-sm list-disc pl-4 space-y-1">
+                    {data.marketInfo.marketHighlights.map(
+                      (highlight, index) => (
+                        <li key={index}>{highlight}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
           </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Median Household Income</div>
-            <div className="text-xl font-bold">$76,912</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16 16v1a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2h2m5.66 0H14a2 2 0 012 2v3.34l1 1L22 8v8"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Unemployment Rate</div>
-            <div className="text-xl font-bold">7.4%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
 }

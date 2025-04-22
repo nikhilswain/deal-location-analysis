@@ -1,121 +1,109 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SaleComparable } from "@/types";
 import Image from "next/image";
 
-type LandSale = {
-  id: string;
-  image: string;
-  address: string;
-  submarket: string;
-  date: string;
-  size: string;
-  pricePerSqFt: string;
-  totalPrice: string;
-  zoning: string;
-  owner: string;
-  tenant?: string;
-};
+interface LandSaleComparablesProps {
+  data?: {
+    salesComparables?: SaleComparable[];
+  };
+}
 
-const landSales: LandSale[] = [
+// Fallback data in case no comparables are provided
+const fallbackComparables: SaleComparable[] = [
   {
-    id: "1",
-    image: "/images/image-2.png",
-    address: "Baylis 495 Business Park",
-    submarket: "Melville, NY",
-    date: "May-24",
-    size: "103,500 sqft",
+    date: "Q3 2023",
+    propertyName: "640 Columbia St",
+    tenant: "Amazon",
+    market: "Red Hook",
+    size: "225,000 SF",
     pricePerSqFt: "$425",
-    totalPrice: "$44,000,000",
-    zoning: "M-2",
-    owner: "Bethel Green",
-    tenant: "Dr. Pepper",
+    totalPrice: "$95,625,000",
+    capRate: 0,
+    purchaser: "JLL",
+    seller: "JLL",
   },
   {
-    id: "2",
-    image: "/images/image-3.png",
-    address: "1 Debaun Road",
-    submarket: "Millstone, NJ",
-    date: "Jun-24",
-    size: "132,930 sqft",
-    pricePerSqFt: "$312",
-    totalPrice: "$41,903,580",
-    zoning: "I-3",
-    owner: "Cabot",
-    tenant: "Berry Plastics",
-  },
-  {
-    id: "3",
-    image: "/images/image-4.png",
-    address: "39 Edgeboro Road",
-    submarket: "Millstone, NJ",
-    date: "Oct-23",
-    size: "513,240 sqft",
-    pricePerSqFt: "$323",
-    totalPrice: "$165,776,520",
-    zoning: "I-3",
-    owner: "Blackstone",
-    tenant: "FedEx",
-  },
-  {
-    id: "4",
-    image: "/images/image-5.png",
-    address: "Terminal Logistics Center",
-    submarket: "Queens, NY",
-    date: "Mar-23",
-    size: "336,000 sqft",
+    date: "Q4 2023",
+    propertyName: "55 Bay Street",
+    tenant: "Do & Co",
+    market: "Red Hook",
+    size: "336,000 SF",
     pricePerSqFt: "$405",
     totalPrice: "$136,000,000",
-    zoning: "M1-1",
-    owner: "Goldman",
-    tenant: "Do & Co",
+    capRate: 0,
+    purchaser: "Goldman",
+    seller: "Goldman",
+  },
+  {
+    date: "Q1 2024",
+    propertyName: "219 Sullivan Street",
+    tenant: "FedEx",
+    market: "Red Hook",
+    size: "285,000 SF",
+    pricePerSqFt: "$415",
+    totalPrice: "$118,275,000",
+    capRate: 0,
+    purchaser: "CBRE",
+    seller: "CBRE",
+  },
+  {
+    date: "Q2 2024",
+    propertyName: "402 Van Brunt St",
+    tenant: "UPS",
+    market: "Red Hook",
+    size: "195,000 SF",
+    pricePerSqFt: "$435",
+    totalPrice: "$84,825,000",
+    capRate: 0,
+    purchaser: "Cushman",
+    seller: "Cushman",
   },
 ];
 
-export function LandSaleComparables() {
+export function LandSaleComparables({ data }: LandSaleComparablesProps) {
+  const comparables = data?.salesComparables || fallbackComparables;
+
   return (
-    <div className="bg-white rounded-lg p-5 shadow-sm h-full">
-      <h2 className="text-lg font-semibold mb-4">Land Sale Comparables</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {landSales.map((sale) => (
-          <div
-            key={sale.id}
-            className="flex md:flex-col lg:flex-row items-center shadow-sm rounded-md overflow-hidden"
-          >
-            <div className="relative h-[80px] w-[120px] md:h-[100px] md:w-full lg:h-[100px] lg:w-[120px] flex-shrink-0">
-              <Image
-                src={sale.image || "/placeholder.svg"}
-                alt={sale.address}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-            <div className="p-3 flex-1">
-              <h3 className="font-medium text-sm">{sale.address}</h3>
-              <p className="text-xs text-muted-foreground">
-                {sale.submarket} • {sale.date}
-              </p>
-
-              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                <div>
-                  <span className="text-muted-foreground">Size:</span>{" "}
-                  <span className="font-medium">{sale.size}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Price/SF:</span>{" "}
-                  <span className="font-medium">{sale.pricePerSqFt}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Total:</span>{" "}
-                  <span className="font-medium">{sale.totalPrice}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Owner:</span>{" "}
-                  <span className="font-medium">{sale.owner}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Sale Comparables</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-2">Property</th>
+                <th className="text-left p-2">Submarket</th>
+                <th className="text-left p-2">Date</th>
+                <th className="text-right p-2">Size</th>
+                <th className="text-right p-2">Price/SF</th>
+                <th className="text-right p-2">Total Price</th>
+                <th className="text-left p-2">Owner</th>
+                <th className="text-left p-2">Tenant</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {comparables.map((sale, index) => (
+                <tr key={index} className="hover:bg-muted/50">
+                  <td className="p-2">
+                    <div className="font-medium">{sale.propertyName}</div>
+                  </td>
+                  <td className="p-2">{sale.market}</td>
+                  <td className="p-2">{sale.date}</td>
+                  <td className="p-2 text-right">{sale.size}</td>
+                  <td className="p-2 text-right">{sale.pricePerSqFt}</td>
+                  <td className="p-2 text-right">{sale.totalPrice}</td>
+                  <td className="p-2">{sale.purchaser || "N/A"}</td>
+                  <td className="p-2">{sale.tenant || "N/A"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
