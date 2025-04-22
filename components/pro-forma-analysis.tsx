@@ -35,7 +35,9 @@ export function ProFormaAnalysis({ data }: ProFormaAnalysisProps) {
   return (
     <Card className="bg-blue-50">
       <CardHeader>
-        <CardTitle>10-Year Pro Forma Analysis</CardTitle>
+        <CardTitle className="text-2xl text-gray-600 mb-4 font-bold">
+          10-Year Pro Forma Analysis
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>

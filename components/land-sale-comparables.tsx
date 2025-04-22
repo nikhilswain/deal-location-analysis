@@ -24,7 +24,9 @@ export function LandSaleComparables({ data }: LandSaleComparablesProps) {
   return (
     <Card className="bg-blue-50">
       <CardHeader>
-        <CardTitle>Sale Comparables</CardTitle>
+        <CardTitle className="text-2xl text-gray-600 mb-4 font-bold">
+          Sale Comparables
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

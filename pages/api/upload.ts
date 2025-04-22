@@ -24,6 +24,7 @@ interface ResponseData {
   success?: boolean;
   error?: string;
   data?: ExtractedData;
+  rawText?: string;
 }
 
 export function parsePdfTables(buffer: Buffer): Promise<string[][]> {
@@ -95,6 +96,7 @@ router
       res.status(200).json({
         success: true,
         data: extractedData as ExtractedData,
+        rawText: text,
       });
     } catch (error: any) {
       console.error("PDF processing error:", error);
@@ -374,6 +376,7 @@ async function extractPdfData(text: string): Promise<ExtractedData> {
 
   data.capitalMarketsContacts = capitalMarketsContacts;
   data.financingContacts = financingContacts;
+
   return data;
 }
 

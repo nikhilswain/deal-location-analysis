@@ -36,6 +36,8 @@ import { LandSaleComparablesStatic } from "@/components/land-sale-comparables-st
 import { LandSaleComparables } from "@/components/land-sale-comparables";
 import { formatCurrency } from "@/lib/format-currency";
 import { ContactCard } from "@/components/contact-card";
+import { ToggleableContent } from "@/components/toggle-content";
+import { JsonViewer } from "@/components/json-view";
 
 interface PropertyData {
   propertyName: string;
@@ -55,6 +57,8 @@ export default function LocationAnalysis() {
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(
     null
   );
+  const [extractedTextData, setExtractedTextData] =
+    useState<any>("No Pdf Uploaded");
   const [propertyData, setPropertyData] = useState<PropertyData>({
     propertyName: "280 Richards, Brooklyn, NY",
     seller: "Thor Equities",
@@ -65,8 +69,9 @@ export default function LocationAnalysis() {
     landArea: "16 acres",
   });
 
-  const handleDataExtracted = (data: ExtractedData) => {
+  const handleDataExtracted = (data: ExtractedData, text: string) => {
     setExtractedData(data);
+    setExtractedTextData(text);
     setPropertyData((prevData) => ({
       ...prevData,
       propertyName:
@@ -317,6 +322,22 @@ export default function LocationAnalysis() {
             </div>
             {extractedData && <UploadDate />}
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="pt-8">
+                <ToggleableContent title="PDF Extracted Text">
+                  <div className="whitespace-pre-wrap font-mono text-sm">
+                    {extractedTextData}
+                  </div>
+                </ToggleableContent>
+              </div>
+
+              <div className="pt-8">
+                <ToggleableContent title="JSON Data">
+                  <JsonViewer data={extractedData} />
+                </ToggleableContent>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               {/* Left: Map/Property Image (60%) */}
               <div className="h-full md:col-span-3 relative rounded-lg overflow-hidden shadow-sm">
@@ -492,11 +513,15 @@ export default function LocationAnalysis() {
             {/* contact details data - pdf extracted */}
             {extractedData?.financingContacts &&
               extractedData?.financingContacts.length > 0 && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 bg-blue-50">
-                  <h2>Capital Market Contacts</h2>
-                  {extractedData?.financingContacts?.map((c, i) => (
-                    <ContactCard key={c.email} data={c} index={i} />
-                  ))}
+                <div className="bg-blue-50 p-4">
+                  <h1 className="text-2xl text-gray-600 mb-4 font-bold">
+                    Capital Market Contacts
+                  </h1>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 ">
+                    {extractedData?.financingContacts?.map((c, i) => (
+                      <ContactCard key={c.email} data={c} index={i} />
+                    ))}
+                  </div>
                 </div>
               )}
 

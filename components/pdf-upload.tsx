@@ -7,7 +7,7 @@ import { File } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface PdfUploadProps {
-  onDataExtracted: (data: ExtractedData) => void;
+  onDataExtracted: (data: ExtractedData, rawText: string) => void;
 }
 
 export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
@@ -71,7 +71,7 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
         title: "PDF processed",
         description: "Pdf parsed, please scroll to see updated changes.",
       });
-      onDataExtracted(result.data);
+      onDataExtracted(result.data, result.rawText);
     } catch (e: any) {
       console.error("Upload error:", e);
       toast({
