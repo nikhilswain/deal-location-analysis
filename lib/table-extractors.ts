@@ -1,4 +1,4 @@
-import { SaleComparable, ProForma, ProFormaYear } from "@/types";
+import { SaleComparable, ProForma, ProFormaYear, Contact } from "@/types";
 
 export function extractComparablesFromRows(rows: string[][]): SaleComparable[] {
   const comps: SaleComparable[] = [];
@@ -88,4 +88,56 @@ export function extractProFormaFromRows(rows: string[][]): ProForma {
   }
 
   return pf;
+}
+
+export function parseContactsBlock(
+  text: string,
+  startHeading: string,
+  endHeading: string
+): Contact[] {
+  // 1) escape any regex metacharacters, then replace spaces with \s+
+  const escapeHeading = (s: string) =>
+    s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&").replace(/ +/g, "\\s+");
+
+  const startPat = escapeHeading(startHeading) + "\\s*\\.";
+  const endPat = escapeHeading(endHeading) + "\\s*\\.";
+  const re = new RegExp(`${startPat}([\\s\\S]*?)${endPat}`, "i");
+
+  const m = text.match(re);
+  if (!m) return [];
+
+  // Grab everything between the two headings...
+  const block = m[1];
+
+  // 2) Split into lines, drop blank / pure‑digits (page nums) / stray headers
+  const lines = block
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => {
+      return (
+        l &&
+        !/^\d+$/.test(l) &&
+        !new RegExp(`^${startHeading}\\.$`, "i").test(l) &&
+        !new RegExp(`^${endHeading}\\.$`, "i").test(l)
+      );
+    });
+
+  const contacts: Contact[] = [];
+  let buf: string[] = [];
+
+  for (const line of lines) {
+    // whenever we hit an email, that marks the end of one record
+    if (/@\w+\.\w+/.test(line)) {
+      const email = line;
+      const phone = buf.pop() || "";
+      const name = buf.shift() || "";
+      const title = buf.join(" ").trim();
+      contacts.push({ name, title, phone, email });
+      buf = [];
+    } else {
+      buf.push(line);
+    }
+  }
+
+  return contacts;
 }

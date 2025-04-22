@@ -3,10 +3,17 @@ import { createRouter } from "next-connect";
 import multer from "multer";
 import pdfParse from "pdf-parse";
 import pdf2table from "pdf2table";
-import { ExtractedData, SaleComparable, ProFormaYear, ProForma } from "@/types";
+import {
+  ExtractedData,
+  SaleComparable,
+  ProFormaYear,
+  ProForma,
+  Contact,
+} from "@/types";
 import {
   extractComparablesFromRows,
   extractProFormaFromRows,
+  parseContactsBlock,
 } from "@/lib/table-extractors";
 
 interface NextApiRequestWithFile extends NextApiRequest {
@@ -353,6 +360,20 @@ async function extractPdfData(text: string): Promise<ExtractedData> {
     )} PSF`;
   }
 
+  const capitalMarketsContacts = parseContactsBlock(
+    text,
+    "CAPITAL MARKETS CONTACTS",
+    "FINANCING CONTACTS"
+  );
+
+  const financingContacts = parseContactsBlock(
+    text,
+    "FINANCING CONTACTS",
+    "SALE COMPARABLES"
+  );
+
+  data.capitalMarketsContacts = capitalMarketsContacts;
+  data.financingContacts = financingContacts;
   return data;
 }
 
@@ -564,6 +585,10 @@ export function parseProFormaFromText(fullText: string): ProForma {
   }
 
   return pf;
+}
+
+function escapeRegex(s: string) {
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
 export default router.handler();

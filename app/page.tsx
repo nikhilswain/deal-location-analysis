@@ -35,6 +35,7 @@ import { ProFormaAnalysis } from "@/components/pro-forma-analysis";
 import { LandSaleComparablesStatic } from "@/components/land-sale-comparables-static";
 import { LandSaleComparables } from "@/components/land-sale-comparables";
 import { formatCurrency } from "@/lib/format-currency";
+import { ContactCard } from "@/components/contact-card";
 
 interface PropertyData {
   propertyName: string;
@@ -487,6 +488,17 @@ export default function LocationAnalysis() {
                 </div>
               )}
             </div>
+
+            {/* contact details data - pdf extracted */}
+            {extractedData?.financingContacts &&
+              extractedData?.financingContacts.length > 0 && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 bg-blue-50">
+                  <h2>Capital Market Contacts</h2>
+                  {extractedData?.financingContacts?.map((c, i) => (
+                    <ContactCard key={c.email} data={c} index={i} />
+                  ))}
+                </div>
+              )}
 
             {/* Summary Section (Deal Summary + Asset-Level Data) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

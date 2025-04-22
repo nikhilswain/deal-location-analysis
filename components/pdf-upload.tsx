@@ -1,7 +1,6 @@
 "use client";
 
 import { ChangeEvent, useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ExtractedData } from "@/types";
 import { File } from "lucide-react";
@@ -15,23 +14,36 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { toast } = useToast();
 
   const simulateProgress = () => {
     setProgress(0);
     const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 90) {
-          clearInterval(interval);
-          return p;
-        }
-        return p + 10;
-      });
+      setProgress((p) => (p >= 90 ? (clearInterval(interval), p) : p + 10));
     }, 200);
     return interval;
   };
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File | Blob) => {
+    setErrorMsg(null);
+
+    if (
+      !file ||
+      typeof file !== "object" ||
+      !("type" in file) ||
+      file.type !== "application/pdf"
+    ) {
+      const msg = "Please upload a PDF file only.";
+      setErrorMsg(msg);
+      toast({
+        title: "Invalid file",
+        description: msg,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUploading(true);
     const progressInterval = simulateProgress();
 
@@ -47,24 +59,28 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
       clearInterval(progressInterval);
       setProgress(100);
 
-      if (!response.ok) throw new Error("Upload failed");
-
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
       const result = await response.json();
-      if (result.success && result.data) {
-        onDataExtracted(result.data);
-      } else {
+      if (!result.success || !result.data) {
         throw new Error(result.error || "Invalid response");
       }
-    } catch (e) {
+
+      toast({
+        title: "PDF processed",
+        description: "Pdf parsed, please scroll to see updated changes.",
+      });
+      onDataExtracted(result.data);
+    } catch (e: any) {
       console.error("Upload error:", e);
       toast({
-        title: "Error",
-        description: "Failed to process PDF",
+        title: "Error processing PDF",
+        description: e.message ?? "Something went wrong.",
         variant: "destructive",
       });
     } finally {
       setIsUploading(false);
-      // optionally reset progress after a moment
       setTimeout(() => setProgress(0), 500);
     }
   };
@@ -74,17 +90,15 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
     if (file) handleFileUpload(file);
   };
 
-  const handleDragOver = useCallback((e) => {
+  const handleDragOver = useCallback((e: any) => {
     e.preventDefault();
     setIsDragging(true);
   }, []);
-
-  const handleDragLeave = useCallback((e) => {
+  const handleDragLeave = useCallback((e: any) => {
     e.preventDefault();
     setIsDragging(false);
   }, []);
-
-  const handleDrop = useCallback(async (e) => {
+  const handleDrop = useCallback(async (e: any) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
@@ -135,13 +149,13 @@ export function PdfUpload({ onDataExtracted }: PdfUploadProps) {
                 Drag and drop your Offering Memorandum here
               </p>
               <p className="text-xs text-muted-foreground">
-                or click to browse files
+                or click to browse files (PDF only)
               </p>
-              <p className="text-xs text-muted-foreground">(PDF files only)</p>
             </>
           )}
         </label>
       </div>
+      {errorMsg && <p className="mt-2 text-sm text-destructive">{errorMsg}</p>}
     </div>
   );
 }

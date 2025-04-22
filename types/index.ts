@@ -72,6 +72,8 @@ export interface ExtractedData {
   investmentHighlights: string[];
   salesComparables: SaleComparable[];
   proForma?: ProForma;
+  capitalMarketsContacts?: Contact[];
+  financingContacts?: Contact[];
 }
 
 export interface SaleComparable {
@@ -109,4 +111,11 @@ export interface ProForma {
     terminalCapRate?: number;
   };
   years: ProFormaYear[];
+}
+
+export interface Contact {
+  name: string;
+  title: string;
+  phone: string;
+  email: string;
 }
